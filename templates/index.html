@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>MeetScribe AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static',filename='style.css')}}">
+<style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    html,body{height:100%;}
+    body{
+        font-family: 'Inter',sans-serif;
+        background:#08060f;
+        color:#e8e8f0;
+        position: relative;
+        overflow-x:hidden;
+
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+    .waveform-wrap{
+        position:fixed; inset:0;
+        display:flex; align-items:center; justify-content:center;
+        gap:4px;
+        z-index:0;
+        opacity:0.18;
+        pointer-events:none;
+    }
+    .nav-btn{
+        background: none;
+        border: none;
+        color: #a8a8c8;
+        font-size: 14px;
+        cursor: pointer;
+    }
+    .nav-btn:hover{
+        color: #c4b5fd;
+    }
+    .bar{
+        width:5px;
+        border-radius:3px;
+        background:linear-gradient(180deg,#7c5cff,#00d4ff);
+        animation:barPlus 1.2s ease-in-out infinite;
+    }
+    @keyframes barPlus{
+        0%,100%{ 
+            height:20px;
+        }
+        50%{ 
+            height:120px;
+        }
+     }
+    
+    nav{
+        position:sticky;
+        top:0;
+        z-index:100;
+        display:flex;
+        justify-content:space-between; 
+        align-items:center;
+        padding:22px 60px;
+        background: #08060f;
+    }
+    #features{
+        display: none;
+        max-width: 1000px;
+        margin: 20px auto;
+        padding: 20px;
+        scroll-margin-top: 100px;
+    }
+    .feature-card{
+        background: #15152acc;
+        border: 1px solid rgba(124,92,255,.3);
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    .logo{ font-family:'Space Grotesk', sans-serif; font-weight: 700;font-size: 20px;display: flex; align-items: center;gap: 8px;}
+    .logo-mark{ 
+        width:28px; height:28px;
+        display:flex; align-items: center; justify-content: center;
+        border-radius: 8px;
+        background: linear-gradient(135deg,#7c5cff,#00d4ff);
+    }
+    .logo-mark svg{ width: 16px; height: 16px;}
+    .nav-links{
+        display: flex;
+        align-items:center; 
+        gap: 25px;
+        margin-left: 10px;
+        font-size: 14px;
+        color: #a8a8c8;}
+    .nav-links a, 
+    .nav-btn{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 40px;
+        color: #a8a8c8;
+        text-decoration: none;
+        font-size: 14px;
+    }
+    .nav-btn{
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+    .nav-links a:hover,
+    .nav-btn:hover{
+        color: #c4b5fd;
+    }
+    .nav-cta {
+        background: linear-gradient(90deg,#7c5cff,#00d4ff);
+        margin-left: 30px;
+        padding: 9px 20px;border-radius: 8px;font-size: 14px; font-weight: 600; color:white;
+        text-decoration: none; display: inline-block;
+    }
+    .hero-container{
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        gap: 35px;
+        max-width: 1250px;
+        margin: 40px auto 0;
+        padding: 0 50px;
+    }
+    .hero{
+        flex:1;
+        max-width: 560px;
+    }
+    .eyebrow{
+        display: inline-block;font-size: 12px;letter-spacing: 1.5px;text-transform: uppercase;
+        color:#c4b5fd; border: 1px solid#7c5cff55; padding: 6px 14px; border-radius: 20px; margin-bottom: 26px;
+    }
+    h1.hero-title{ font-family:'Space Grotesk', sans-serif; font-size: 64px;font-weight: 700;line-height: 1.12; margin-bottom: 22px;}
+    h1.hero-title .grad{
+        background: linear-gradient(90deg,#c4b5fd,#67e8f9);
+        -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero-sub { font-size: 17px; color:#a8a8c8; margin-bottom: 40px; line-height: 1.65; max-width: 520px; }
+    #upload-section{
+        width: 430px;
+        margin-left: -15px;
+        margin: 0;
+        position:relative; 
+        z-index:2;
+        background: #15152acc; 
+        backdrop-filter: blur(16px); 
+        border:1px solid rgba(124,92,255,.3);
+        border-radius: 18px; 
+        padding: 34px; 
+        box-shadow: 
+        0 0 20px rgba(124,92,255,.2),
+        0 0 20px rgba(0,212,255,.1); 
+        
+    }
+    #upload-section h2{
+        font-family: 'Space Grotesk',sans-serif;
+        font-size: 20px; margin-bottom: 6px;
+    }
+    #upload-section .form-sub{ font-size: 13px; color: #8a8ab0; margin-bottom: 22px;}
+    #upload-section label.file-label,
+    #upload-section .context-label{
+        color:#c8c8dc;
+    }
+    #upload-section input[type="text"]{
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        background: #0f0f1a; 
+        border: 1px solid #2a2a42; 
+        color: #e8e8f0;
+    }
+    #upload-section input[type="text"]::placeholder{ color:#6a6a88; }
+    #upload-section input[type="file"]{
+        display: block;
+        width: 100%;
+        margin:12px 0 20px;
+        color:#e8e8f0;
+    }
+    #upload-section button{
+        width: 100%;
+        padding: 15px;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        color:white;
+        background: linear-gradient(90deg,#7c5cff,#00d4ff);
+        box-shadow: 0 8px 30px #7c5cff55;
+        transition: 0.3s ease;
+    }
+
+
+    #upload-section button:hover { box-shadow: 0 10px 40px #7c5cff88; transform: translateY(-2px);}
+    #how-it-works{
+        display: none;
+        position: relative;z-index: 2;
+        max-width: 900px; margin: 100px auto 60px;
+        padding: 0 20px;
+        text-align: center;
+    }
+    #how-it-works h2{
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 30px;margin-bottom: 12px;
+    }
+    #how-it-works .section-sub{color:#a8a8c8; margin-bottom: 44px;}
+    .steps-row{ display:flex;gap:24px;flex-wrap: wrap; justify-content: center;}
+    .step-card{
+        flex:1; min-width: 220px; max-width: 260px;
+        background: #15152a99; border: 1px solid #ffffff14;
+        border-radius: 14px; padding: 26px 20px;
+        text-align: left;
+    }
+    .step-num{
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 30px; height: 30px; border-radius: 50%;
+        background: linear-gradient(135deg,#7c5cff,#00d4ff);
+        font-weight: 700;font-size: 14px; margin-bottom: 14px;
+    }
+    .step-card h3{ font-family: 'Space Grotesk', sans-serif; font-size:16px; margin-bottom: 8px;}
+    .step-card p{ font-size: 13px; color: #a0a0c0; line-height:1.5;}
+
+    footer{
+        margin-top: 100px;
+        padding: 30px;
+        text-align: center; 
+        color:#6a6a88;
+    }
+</style>
+</head>
+<body>
+    <div class="waveform-wrap" id="waveform"></div>
+    <nav>
+        
+        <div class ="logo">
+            <div class=" logo-mark">
+                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                    <path d="M3 12h3l2-7 4 14 3-10 2 5h4"/>
+                </svg>
+            </div>
+            MeetScribe AI
+        </div>
+        <div class="nav-links">
+            <button class="nav-btn"
+            onclick="toggleFeatures()">Features
+            </button>
+            <button class="nav-btn"
+            onclick="toggleHowItWorks()">How It Works</button>
+        </div>
+        <a href="#upload-section" class="nav-cta">Try it free</a>
+    </nav>
+<div class="hero-container">
+    <div class="hero">
+        <span class="eyebrow">AI-Powered Meeting Notes</span>
+        <h1 class=" hero-title">Every meeting,<br><span class="grad">summarized in seconds</span></h1>
+        <p class="hero-sub">Upload a Recording. Get a clean summary, action items, key decisions, and a ready-to-send follow-up email - automatically</p>
+    </div>
+    
+    <div id="upload-section">
+        <h2>Upload your Recording</h2>
+        <p class="form-sub">No Sign-up needed. Free to Try</p>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <label class="file-label">
+            Choose Audio File
+            <input type="file" name="audio_file" accept=".wav,.mp3,.m4a">
+         </label>
+         <label class="context-label">
+            Context<span class="optional-tag">(optional)</span>
+            <input type="text" name="context" placeholder="e.g. Weekly sync with design team">
+         </label>
+         <button type="submit">Upload &amp; Process</button>
+    </form>
+    <div id="loading" style="display:none;">
+        <div class="spinner"></div>
+        <p>Processing</p>
+    </div>
+    </div>
+    </div>
+    <div id="features">
+        <h2>Features</h2>
+        <div class="feature-card">
+            <h3>📝 AI Summary</h3>
+            <p>Get concise meeting summarises in seconds.</p>
+        </div>
+        <div class="feature-card">
+            <h3>✅ Action Items</h3>
+            <p>Automatically identify tasks and responsibilities.</p>
+        </div>
+        <div class="feature-card">
+            <h3>📌 Key decisions</h3>
+            <p>Highlights all the key decisions made in meeting.</p>
+        </div>
+        <div class="feature-card">
+            <h3>📧 Follow-up email generation</h3>
+            <p>Generates follow-up email automatically.</p>
+        </div>
+    </div>
+   <div id="how-it-works">
+    <h2>How it Works</h2>
+    <p class="section-sub">Three steps from raw data to organized notes.</p>
+    <div class="steps-row">
+        <div class="step-card">
+            <div class="step-num">1</div>
+                <h3>Upload</h3>
+                <p>Drop in a meeting recording- WAV, MP3,   OR  M4A</p>
+            </div>
+            <div class="step-card">
+                <div class="step-num">2</div>
+                <h3>AI Processing</h3>
+                <p>Speech is transcribed locally, then summarized by AI.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-num">3</div>
+                <h3>Get Organized Notes</h3>
+                <p>Summary, action items, decisions, tone, and a follow-up email- ready to use.</p>
+            </div>
+        </div>
+    </div>
+</div>
+<footer>
+    Built by Rashmika.S · MeetScribe AI
+</footer>
+<script>
+        function toggleHowItWorks(){
+            var section= document.getElementById("how-it-works");
+            if(section.style.display=="block"){
+                section.style.display="none";
+            }else{
+                section.style.display="block";
+                section.scrollIntoView({
+                    behavior:"smooth"
+                });
+            }
+        }
+        function toggleFeatures(){
+            var section= document.getElementById("features");
+            if(section.style.display==="block"){
+                section.style.display="none";
+            }else{
+                section.style.display="block";
+                section.scrollIntoView({
+                    behavior:"smooth"
+                });
+            }
+        }
+        window.addEventListener('DOMContentLoaded', function(){
+            var wf=document.getElementById('waveform');
+            for(var i=0;i<60;i++){
+                var bar=document.createElement("div");
+                bar.className="bar";
+                bar.style.animationDelay=(Math.random()*1.2)+"s";
+                bar.style.animationDuration=(0.8+Math.random()*0.8)+"s";
+                wf.appendChild(bar);
+            }
+            var form=document.querySelector('#upload-section form');
+            if (form){
+               form.addEventListener('submit',function(){
+                form.style.display='none';
+                document.getElementById('loading').style.display='block';
+               });
+            }
+        });
+    </script>  
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>MeetScribeAI- Results</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    </head>
+    <body>
+        <div class="container animate__animated animate__fadeIn">
+            <h1>Summary</h1>
+            <ol class="summary-list">
+                {% for point in sections['SUMMARY'] %}
+                <li>{{point}}</li>
+                {% endfor %}
+            </ol>
+            <h2>Action Items</h2>
+            <ol class="summary-list">
+                {% for item in sections['ACTION ITEMS'] %}
+                <li>{{item}}</li>
+                {% endfor %}
+            </ol>
+            <h2>Key Decisions</h2>
+            <ol class="summary-list">
+                {% for decision in sections['DECISIONS'] %}
+                <li>{{decision}}</li>
+                {% endfor %}
+            </ol>
+            <h2>Tone</h2>
+            <p>{{sections['TONE']}}</p>
+            <h2>Follow-up Email Draft</h2>
+            <div class="transcript-box">{{sections['FOLLOW-UP EMAIL']}}</div>
+
+            <h2>Full Transcript</h2>
+            <div class="transcript-box">{{transcript}}</div>
+            <a href="/" class="back link">←Upload anthor recording</a>
+        </div>
+    </body>
+</html>
